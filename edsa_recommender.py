@@ -31,6 +31,8 @@ import streamlit as st
 # Data handling dependencies
 import pandas as pd
 import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # Custom Libraries
 from utils.data_loader import load_movie_titles
@@ -39,13 +41,15 @@ from recommenders.content_based import content_model
 
 # Data Loading
 title_list = load_movie_titles('resources/data/movies.csv')
+movies = pd.read_csv('resources/data/movies.csv')
+ratings = pd.read_csv('resources/data/ratings.csv')
 
 # App declaration
 def main():
 
     # DO NOT REMOVE the 'Recommender System' option below, however,
     # you are welcome to add more options to enrich your app.
-    page_options = ["Recommender System","Solution Overview"]
+    page_options = ["Recommender System","Solution Overview", "EDA"]
 
     # -------------------------------------------------------------------
     # ----------- !! THIS CODE MUST NOT BE ALTERED !! -------------------
@@ -103,7 +107,81 @@ def main():
     if page_selection == "Solution Overview":
         st.title("Solution Overview")
         st.write("Describe your winning approach on this page")
+    
+    # EDA
+    st.cache(persist=True)
+    if page_selection == "EDA":
+        # EDA selection
+        st.title('Explore Datasets')
+        st.write('Choose dataset')
+        sys = st.radio("Select an dataset",
+                       ('movies',
+                        'ratings','ratings_movies'))
 
+        if sys == 'movies':
+            st.title('EDA for movies dataset')
+        
+            
+            if st.checkbox('Preview Movies Dataset'):
+                if st.button('Head'):
+                    st.write(movies.head())
+                elif st.button('Tail'):
+                    st.write(movies.tail())
+
+        if sys == 'ratings':
+            st.title('EDA for ratings Dataset')
+            if st.checkbox('Preview Ratings Dataset'):
+                if st.button('Head'):
+                    st.write(ratings.head())
+                elif st.button('Tail'):
+                    st.write(ratings.tail())
+
+            # show distribution of ratings
+            if st.checkbox('Show distribution of ratings'):
+                sns.countplot(x = 'rating', data = ratings, palette="mako")
+                plt.title('Distribution of ratings')
+                st.set_option('deprecation.showPyplotGlobalUse', False)
+                st.pyplot()
+
+        if sys == 'ratings_movies':
+            st.title('EDA for Ratings-Movies Dataset')
+            # merge ratings and movies dataset
+            ratings_movies = pd.merge(ratings, movies, on='movieId')
+
+            # group ratings_movies by title and calc mean rating
+            trend = pd.DataFrame(ratings_movies.groupby('title')['rating'].mean())
+            # create new column by grouping by title counting the number of ratings per movie
+            trend['total number of ratings'] = pd.DataFrame(ratings_movies.groupby('title')['rating'].count())    
+
+            # sort dataframe by total number of ratings
+            trend.sort_values(by=['total number of ratings'], inplace=True, ascending=False)
+            # reset the index
+            trend.reset_index(inplace=True)
+
+            # show top 5 rated movies
+            if st.checkbox('Show top 5 rated movies'):
+                fig, ax = plt.subplots()
+                sns.barplot(x="total number of ratings", y="title", data=trend.head(), palette='rocket')
+                plt.title('Top 5 rated movies')
+                st.pyplot(fig)
+
+            # group ratings_movies by users
+            user_id = pd.DataFrame(ratings_movies.groupby('userId')['rating'].mean())
+            user_id['total number of ratings'] = pd.DataFrame(ratings_movies.groupby('userId')['rating'].count())
+            # sort dataframe by total number of ratings
+            user_id.sort_values(by=['total number of ratings'], inplace=True, ascending=False)
+            # reset the index
+            user_id.reset_index(inplace=True)
+
+            # show movie fundi's
+            if st.checkbox('Show top 10 movie fundis'):
+                sns.barplot(y="total number of ratings", x="userId", data=user_id.head(10),
+                order = user_id.head(10).sort_values('total number of ratings', ascending=False).userId, palette='magma')
+                plt.xticks(rotation=45)
+                plt.title('Top 10 movie fundis')
+                st.set_option('deprecation.showPyplotGlobalUse', False)
+                st.pyplot()
+        
     # You may want to add more sections here for aspects such as an EDA,
     # or to provide your business pitch.
 
