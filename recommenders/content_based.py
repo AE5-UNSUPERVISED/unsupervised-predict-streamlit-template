@@ -36,9 +36,9 @@ from sklearn.feature_extraction.text import CountVectorizer
 import re
 
 # Importing data
-movies = pd.read_csv('resources/data/movies.csv', sep = ',')
-ratings = pd.read_csv('resources/data/ratings.csv')
-imdb = pd.read_csv('resources/data/imdb_data.csv')
+movies = pd.read_csv('/home/explore-student/unsupervised-predict-streamlit-template/resources/data/movies.csv')
+ratings = pd.read_csv('/home/explore-student/unsupervised-predict-streamlit-template/resources/data/ratings.csv')
+imdb = pd.read_csv('/home/explore-student/unsupervised-predict-streamlit-template/resources/data/imdb_data.csv')
 movies.dropna(inplace=True)
 
 def preprocess_genre(genre):
