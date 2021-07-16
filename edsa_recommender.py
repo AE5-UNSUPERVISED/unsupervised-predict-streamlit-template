@@ -34,50 +34,14 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# more dependencies content based
-import os
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.feature_extraction.text import CountVectorizer
-import re
-# more dependencies collab based
-import pickle
-import copy
-from surprise import Reader, Dataset
-from surprise import SVD
-
-
 # Custom Libraries
 from utils.data_loader import load_movie_titles
 from recommenders.collaborative_based import collab_model
 from recommenders.content_based import content_model
 
-# more custom libraries content based
-from recommenders.content_based import preprocess_genre
-from recommenders.content_based import preprocess_titlecast
-from recommenders.content_based import preprocess_director
-from recommenders.content_based import preprocess_keywords
-from recommenders.content_based import data_preprocessing
-import recommenders.content_based
-
-# more custom libraries collab based
-from recommenders.collaborative_based import prediction_item
-from recommenders.collaborative_based import pred_movies
-import recommenders.collaborative_based
 
 # Data Loading
 title_list = load_movie_titles('resources/data/movies.csv')
-movies = pd.read_csv('resources/data/movies.csv')
-ratings = pd.read_csv('resources/data/ratings.csv')
-imdb = pd.read_csv('resources/data/imdb_data.csv')
-movies.dropna(inplace=True)
-
-movies_df = pd.read_csv('resources/data/movies.csv')
-ratings_df = pd.read_csv('resources/data/ratings.csv')
-ratings_df.drop(['timestamp'], axis=1,inplace=True)
-
-# Collaborative based
-# We make use of an SVD model trained on a subset of the MovieLens 10k dataset.
-model=pickle.load(open('resources/models/SVD.pkl', 'rb'))
 
 # App declaration
 def main():
@@ -112,7 +76,7 @@ def main():
             if st.button("Recommend"):
                 try:
                     with st.spinner('Crunching the numbers...'):
-                        top_recommendations = recommenders.content_based.content_model(movie_list=fav_movies,
+                        top_recommendations = content_model(movie_list=fav_movies,
                                                             top_n=10)
                     st.title("We think you'll like:")
                     for i,j in enumerate(top_recommendations):
@@ -126,7 +90,7 @@ def main():
             if st.button("Recommend"):
                 try:
                     with st.spinner('Crunching the numbers...'):
-                        top_recommendations = recommenders.collaborative_based.collab_model(movie_list=fav_movies,
+                        top_recommendations = collab_model(movie_list=fav_movies,
                                                            top_n=10)
                     st.title("We think you'll like:")
                     for i,j in enumerate(top_recommendations):
