@@ -57,10 +57,12 @@ from recommenders.content_based import preprocess_titlecast
 from recommenders.content_based import preprocess_director
 from recommenders.content_based import preprocess_keywords
 from recommenders.content_based import data_preprocessing
+import recommenders.content_based
 
 # more custom libraries collab based
 from recommenders.collaborative_based import prediction_item
 from recommenders.collaborative_based import pred_movies
+import recommenders.collaborative_based
 
 # Data Loading
 title_list = load_movie_titles('resources/data/movies.csv')
@@ -110,7 +112,7 @@ def main():
             if st.button("Recommend"):
                 try:
                     with st.spinner('Crunching the numbers...'):
-                        top_recommendations = content_model(movie_list=fav_movies,
+                        top_recommendations = recommenders.content_based.content_model(movie_list=fav_movies,
                                                             top_n=10)
                     st.title("We think you'll like:")
                     for i,j in enumerate(top_recommendations):
@@ -124,7 +126,7 @@ def main():
             if st.button("Recommend"):
                 try:
                     with st.spinner('Crunching the numbers...'):
-                        top_recommendations = collab_model(movie_list=fav_movies,
+                        top_recommendations = recommenders.collaborative_based.collab_model(movie_list=fav_movies,
                                                            top_n=10)
                     st.title("We think you'll like:")
                     for i,j in enumerate(top_recommendations):
