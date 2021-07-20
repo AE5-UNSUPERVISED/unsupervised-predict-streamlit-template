@@ -48,7 +48,7 @@ ratings_df.drop(['timestamp'], axis=1,inplace=True)
 
 # We make use of an SVD model trained on a subset of the MovieLens 10k dataset.
 #model=pickle.load(open('/home/explore-student/unsupervised-predict-streamlit-template/resources/models/SVD.pkl', 'rb'))
-model=pickle.load(open('resources/models/SVD.pkl', 'rb'))
+model=pickle.load(open('resources/models/svd.pkl', 'rb'))
 
 # Create new feature year
 movies_df['year'] = movies_df['title'].apply(lambda st: st[st.find("(")+1:st.find(")")])
