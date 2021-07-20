@@ -50,7 +50,8 @@ ratings_df.drop(['timestamp'], axis=1,inplace=True)
 #model=pickle.load(open('/home/explore-student/unsupervised-predict-streamlit-template/resources/models/SVD.pkl', 'rb'))
 model=pickle.load(open('resources/models/SVD.pkl', 'rb'))
 
-
+# Create new feature year
+movies_df['year'] = movies_df['title'].apply(lambda st: st[st.find("(")+1:st.find(")")])
 
 def prediction_item(item_id):
     """Map a given favourite movie to users within the
@@ -124,10 +125,8 @@ def collab_model(movie_list,top_n=10):
         Titles of the top-n movie recommendations to the user.
 
     """
-    # Create new feature year
-    movies_df['year'] = movies_df['title'].apply(lambda st: st[st.find("(")+1:st.find(")")])
-    
     movies = movies_df
+
     # extract year from movie list
     movie_year = [x[-6:] for x in movie_list]
     # clean year
@@ -178,5 +177,5 @@ def collab_model(movie_list,top_n=10):
     top_indexes = np.setdiff1d(top_50_indexes,[idx_1,idx_2,idx_3])
     # Get top 10 movies that are most similar to the users chosen 3 movies
     for i in top_indexes[:top_n]:
-        recommended_movies.append(list(movies_df['title'])[i])
+        recommended_movies.append(list(movies['title'])[i])
     return recommended_movies
