@@ -33,9 +33,10 @@ import numpy as np
 import pickle
 import copy
 from surprise import Reader, Dataset
-from surprise import SVD, NormalPredictor, BaselineOnly, KNNBasic, NMF
+from surprise import SVD # NormalPredictor, BaselineOnly, KNNBasic, NMF
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
+import re
 
 # Importing data
 #movies_df = pd.read_csv('/home/explore-student/unsupervised-predict-streamlit-template/resources/data/movies.csv')
@@ -48,6 +49,9 @@ ratings_df.drop(['timestamp'], axis=1,inplace=True)
 # We make use of an SVD model trained on a subset of the MovieLens 10k dataset.
 #model=pickle.load(open('/home/explore-student/unsupervised-predict-streamlit-template/resources/models/SVD.pkl', 'rb'))
 model=pickle.load(open('resources/models/SVD.pkl', 'rb'))
+
+# Create new feature year
+movies_df['year'] = movies_df['title'].apply(lambda st: st[st.find("(")+1:st.find(")")])
 
 def prediction_item(item_id):
     """Map a given favourite movie to users within the
@@ -121,32 +125,56 @@ def collab_model(movie_list,top_n=10):
         Titles of the top-n movie recommendations to the user.
 
     """
-
-    indices = pd.Series(movies_df['title'])
+    movies = movies_df
+    # extract year from movie list
+    movie_year = [x[-6:] for x in movie_list]
+    # clean year
+    def clean_year(movie_year):
+        em = []
+        for i in range(len(movie_year)):
+            x = re.sub(r'[\(\)]', '', movie_year[i])
+            em.append(x)
+        return em
+    cleanyear = clean_year(movie_year)
+    # drop rows that does not have year
+    index_names = movies[movies['year'].str.len() != 4].index
+    movies.drop(index_names, inplace=True)
+    # filter out years that are not in range
+    minyear = str(int(min(cleanyear)) - 5)
+    maxyear = str(int(max(cleanyear)) + 5)
+    movies = movies[(movies['year'] > minyear) & (movies['year'] < maxyear)]
+    
+    # map the given movies selected within the app to users within the MovieLens dataset, return user ID's of users with
+    # similar high ratings for each movie
     movie_ids = pred_movies(movie_list)
     df_init_users = ratings_df[ratings_df['userId']==movie_ids[0]]
     for i in movie_ids[1:]:
         df_init_users=df_init_users.append(ratings_df[ratings_df['userId']==i])
     # Getting the cosine similarity matrix
     cosine_sim = cosine_similarity(np.array(df_init_users), np.array(df_init_users))
+    # Get the title of each movie as the index
+    indices = pd.Series(movies['title'])
+    # Getting the index of the movie that matches the title
     idx_1 = indices[indices == movie_list[0]].index[0]
     idx_2 = indices[indices == movie_list[1]].index[0]
     idx_3 = indices[indices == movie_list[2]].index[0]
-    # Creating a Series with the similarity scores in descending order
+    # Get similarity score for each index
     rank_1 = cosine_sim[idx_1]
     rank_2 = cosine_sim[idx_2]
     rank_3 = cosine_sim[idx_3]
-    # Calculating the scores
+    # Creating a Series with the similarity scores in descending order
     score_series_1 = pd.Series(rank_1).sort_values(ascending = False)
     score_series_2 = pd.Series(rank_2).sort_values(ascending = False)
     score_series_3 = pd.Series(rank_3).sort_values(ascending = False)
-     # Appending the names of movies
+     # Append all series and then sort similarity scores in descending order
     listings = score_series_1.append(score_series_2).append(score_series_3).sort_values(ascending = False)
+    # Initializing the empty list of recommended movies
     recommended_movies = []
-    # Choose top 50
-    top_50_indexes = list(listings.iloc[1:50].index)
+    # Choose top 50 indexes of our series as a list
+    top_50_indexes = list(listings.iloc[:50].index)
     # Removing chosen movies
     top_indexes = np.setdiff1d(top_50_indexes,[idx_1,idx_2,idx_3])
+    # Get top 10 movies that are most similar to the users chosen 3 movies
     for i in top_indexes[:top_n]:
         recommended_movies.append(list(movies_df['title'])[i])
     return recommended_movies
