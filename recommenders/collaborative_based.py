@@ -151,7 +151,7 @@ def collab_model(movie_list,top_n=10):
     for i in movie_ids[1:]:
         df_init_users=df_init_users.append(ratings_df[ratings_df['userId']==i])
     # Getting the cosine similarity matrix
-    cosine_sim = cosine_similarity(np.array(df_init_users), np.array(df_init_users))
+    cosine_sim = cosine_similarity(df_init_users)
     # Get the title of each movie as the index
     indices = pd.Series(movies['title'])
     # Getting the index of the movie that matches the title
@@ -171,7 +171,7 @@ def collab_model(movie_list,top_n=10):
     # Initializing the empty list of recommended movies
     recommended_movies = []
     # Choose top 50 indexes of our series as a list
-    top_50_indexes = list(listings.iloc[1:51].index)
+    top_50_indexes = list(listings.iloc[:50].index)
     # Removing chosen movies
     top_indexes = np.setdiff1d(top_50_indexes,[idx_1,idx_2,idx_3])
     # Get top 10 movies that are most similar to the users chosen 3 movies
