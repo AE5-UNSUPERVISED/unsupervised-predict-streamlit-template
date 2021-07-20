@@ -134,7 +134,7 @@ def content_model(movie_list,top_n=10):
     minyear = str(int(min(cleanyear)) - 5)
     maxyear = str(int(max(cleanyear)) + 5)
     data = data[(data['year'] > minyear) & (data['year'] < maxyear)]
-    columns = ['title_cast']
+    columns = ['title_cast','director', 'plot_keywords']
     # Combine text data in one column
     df_content = (pd.Series(data[columns]
                       .fillna('')
