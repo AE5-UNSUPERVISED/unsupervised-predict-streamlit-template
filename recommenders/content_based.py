@@ -36,10 +36,16 @@ from sklearn.feature_extraction.text import CountVectorizer
 import re
 
 # Importing data
-movies = pd.read_csv('/home/explore-student/unsupervised-predict-streamlit-template/resources/data/movies.csv')
-ratings = pd.read_csv('/home/explore-student/unsupervised-predict-streamlit-template/resources/data/ratings.csv')
-imdb = pd.read_csv('/home/explore-student/unsupervised-predict-streamlit-template/resources/data/imdb_data.csv')
+#movies = pd.read_csv('/home/explore-student/unsupervised-predict-streamlit-template/resources/data/movies.csv')
+#ratings = pd.read_csv('/home/explore-student/unsupervised-predict-streamlit-template/resources/data/ratings.csv')
+#imdb = pd.read_csv('/home/explore-student/unsupervised-predict-streamlit-template/resources/data/imdb_data.csv')
+movies = pd.read_csv('resources/data/movies.csv')
+ratings = pd.read_csv('resources/data/ratings.csv')
+imdb = pd.read_csv('resources/data/imdb_data.csv')
 movies.dropna(inplace=True)
+
+# create new feature year
+movies['year'] = movies['title'].apply(lambda st: st[st.find("(")+1:st.find(")")])
 
 def preprocess_genre(genre):
     genre = re.sub(r'[\-]', '_', genre)
@@ -107,39 +113,61 @@ def content_model(movie_list,top_n=10):
         Titles of the top-n movie recommendations to the user.
 
     """
-    # Initializing the empty list of recommended movies
-    recommended_movies = []
-    data = data_preprocessing(27000)
+
+    # extract year from movie list
+    movie_year = [x[-6:] for x in movie_list]
+    # clean year
+    def clean_year(movie_year):
+        em = []
+        for i in range(len(movie_year)):
+            x = re.sub(r'[\(\)]', '', movie_year[i])
+            em.append(x)
+        return em
+    cleanyear = clean_year(movie_year)
+    
+    # preprocess data and select subset
+    data = data_preprocessing(80000)
+    # drop rows that does not have year
+    index_names = data[data['year'].str.len() != 4].index
+    data.drop(index_names, inplace=True)
+    # filter out years that are not in range
+    minyear = str(int(min(cleanyear)) - 5)
+    maxyear = str(int(max(cleanyear)) + 5)
+    data = data[(data['year'] > minyear) & (data['year'] < maxyear)]
+    columns = ['title_cast']
     # Combine text data in one column
-    df_content = (pd.Series(data[['genres', 'title_cast','director', 'plot_keywords']]
+    df_content = (pd.Series(data[columns]
                       .fillna('')
                       .values.tolist()).str.join(' '))
     # Instantiating and generating the count matrix
     count_vec = CountVectorizer()
     count_matrix = count_vec.fit_transform(df_content)
-    indices = pd.Series(data['title'])
+    # Get cosine similarity matrix
     cosine_sim = cosine_similarity(count_matrix, count_matrix)
+    # Get the title of each movie as the index
+    indices = pd.Series(data['title'])
     # Getting the index of the movie that matches the title
     idx_1 = indices[indices == movie_list[0]].index[0]
     idx_2 = indices[indices == movie_list[1]].index[0]
     idx_3 = indices[indices == movie_list[2]].index[0]
-    # Creating a Series with the similarity scores in descending order
+    # Get similarity score for each index
     rank_1 = cosine_sim[idx_1]
     rank_2 = cosine_sim[idx_2]
     rank_3 = cosine_sim[idx_3]
-    # Calculating the scores
+    # Creating a Series with the similarity scores in descending order
     score_series_1 = pd.Series(rank_1).sort_values(ascending = False)
     score_series_2 = pd.Series(rank_2).sort_values(ascending = False)
     score_series_3 = pd.Series(rank_3).sort_values(ascending = False)
-    # Getting the indexes of the 10 most similar movies
+    # Append all series and then sort similarity scores in descending order
     listings = score_series_1.append(score_series_2).append(score_series_3).sort_values(ascending = False)
 
-    # Store movie names
+    # Initializing the empty list of recommended movies
     recommended_movies = []
-    # Appending the names of movies
-    top_50_indexes = list(listings.iloc[1:50].index)
+    # Get top 50 indexes of our series as a list
+    top_50_indexes = list(listings.iloc[:50].index)
     # Removing chosen movies
     top_indexes = np.setdiff1d(top_50_indexes,[idx_1,idx_2,idx_3])
+    # Get top 10 movies that are most similar to the users chosen 3 movies
     for i in top_indexes[:top_n]:
         recommended_movies.append(list(movies['title'])[i])
     return recommended_movies
