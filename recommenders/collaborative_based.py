@@ -51,7 +51,8 @@ ratings_df.drop(['timestamp'], axis=1,inplace=True)
 model=pickle.load(open('resources/models/SVD.pkl', 'rb'))
 
 # Create new feature year
-movies_df['year'] = movies_df['title'].apply(lambda st: st[st.find("(")+1:st.find(")")])
+movies_df['year'] = movies_df['title'].str[-6:]
+movies_df['year'] = movies_df['year'].apply(lambda st: st[st.find("(")+1:st.find(")")])
 
 def prediction_item(item_id):
     """Map a given favourite movie to users within the
