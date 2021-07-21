@@ -114,7 +114,18 @@ def main():
         st.title("Movie Recommendation App")
         st.write("Team AE5 Unsupervised")
         
-        st.image('resources/imgs/Movie_Recommendation.jpg',use_column_width=True) 
+        st.image('resources/imgs/movies_selection.jpg',use_column_width=True) 
+
+        st.header("Introduction")
+        st.write("Recommendation systems are the systems that are used to gain more user attraction by understanding\
+        the user’s preferences. These systems have now become popular because of their ability to provide personalized\
+        content to different users to suit their taste. For example, millions of products listed on e-commerce websites\
+        make it impossible to find out a desired product. This is where these systems help us by quickly recommending us\
+        with the products we might be interested to buy. Another example is Netflix, which suggests the same genre movies\
+        by understanding our interest or choice of movies we like. YouTube is another good example of recommender system,\
+        which recommends videos using our historical data. There are many differenct recommendation engines available.\
+        However, the scope of this project focuses on content based filtering and collaborative based filtering\
+        recommendation systems.")
 
         st.subheader("So, what are you watching tonight...???")
         #st.markdown(title_template, unsafe_allow_html=True)
@@ -127,6 +138,7 @@ def main():
         improving and fixing the given base recommender algorithms, as well as provide greater context to the problem.")
         st.write("For more information, please click here [link] (https://www.kaggle.com/c/edsa-movie-recommendation-challenge/overview).")
         
+        st.image('resources/imgs/Movie_Recommendation.jpg',use_column_width=True)
     if page_selection == "Our Approach":
         st.title("Our approach")
         #st.write("Here we put a summary about how we solved the problem. *To added from our latest notebook*")
@@ -188,7 +200,7 @@ def main():
             These recommendations were made based on their similar high ratings by other similar users.')
         st.write('In order to fine tune these recommendations, a filter was applied in both approaches, filtering\
             out movies that was not in a specified release year range.')
-        st.subheader("RMSE of models investigated for Collaborative Filtering")
+        st.subheader("Performance of models investigated for Collaborative Filtering")
         st.write("RMSE of the recommendation models to show their performance")
         st.image('resources/imgs/RMSE.PNG',use_column_width=True)
         st.write("As we can see, the SVD model performed best, thus the SVD model was used in the collaborative filtering\
