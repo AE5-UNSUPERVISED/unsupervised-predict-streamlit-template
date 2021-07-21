@@ -45,7 +45,8 @@ imdb = pd.read_csv('resources/data/imdb_data.csv')
 movies.dropna(inplace=True)
 
 # create new feature year
-movies['year'] = movies['title'].apply(lambda st: st[st.find("(")+1:st.find(")")])
+movies['year'] = movies['title'].str[-6:]
+movies['year'] = movies['year'].apply(lambda st: st[st.find("(")+1:st.find(")")])
 
 def preprocess_genre(genre):
     genre = re.sub(r'[\-]', '_', genre)
@@ -126,7 +127,7 @@ def content_model(movie_list,top_n=10):
     cleanyear = clean_year(movie_year)
     
     # preprocess data and select subset
-    data = data_preprocessing(80000)
+    data = data_preprocessing(35000)
     # drop rows that does not have year
     index_names = data[data['year'].str.len() != 4].index
     data.drop(index_names, inplace=True)
@@ -134,7 +135,7 @@ def content_model(movie_list,top_n=10):
     minyear = str(int(min(cleanyear)) - 5)
     maxyear = str(int(max(cleanyear)) + 5)
     data = data[(data['year'] > minyear) & (data['year'] < maxyear)]
-    columns = ['title_cast','director', 'plot_keywords']
+    columns = ['plot_keywords']
     # Combine text data in one column
     df_content = (pd.Series(data[columns]
                       .fillna('')
