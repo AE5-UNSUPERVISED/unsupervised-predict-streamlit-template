@@ -202,7 +202,7 @@ def main():
             out movies that was not in a specified release year range.')
         st.subheader("Performance of models investigated for Collaborative Filtering")
         st.write("RMSE of the recommendation models to show their performance")
-        st.image('resources/imgs/RMSE.PNG',use_column_width=True)
+        st.image('resources/imgs/RMSE.png',use_column_width=True)
         st.write("As we can see, the SVD model performed best, thus the SVD model was used in the collaborative filtering\
             approach.")
         st.subheader('Trade-offs')
