@@ -206,7 +206,7 @@ def main():
         st.write("As we can see, the SVD model performed best, thus the SVD model was used in the collaborative filtering\
             approach.")
         st.subheader('Trade-offs')
-        st.write('Both approaches gave relatively good recommendations, however the latency for the content based filter was lower\
+        st.write('Both approaches gave relatively good recommendations, however the latency for the content based filter was higher\
             than that of the collaboratory based filter.')
         st.write("For the content based filter, if a user picks a list of movies which is not similar to any other movies in the dataset\
             based on genre, title cast, director or plot keywords then the recommendations given by the system won't be\
@@ -217,27 +217,29 @@ def main():
         st.write("Another aspect we should consider is the diversity of recommendations. Collaborative based approaches \
             are known to give more diverse recommendations.\
             Nevertheless, the diversity of the recommendations for the content based approach can be improved by not\
-                just determining similarity based on genre, but also adding plot keywords, directors and the title cast in\
+                just determining similarity based on let's say genre, but also adding plot keywords, directors and the title cast in\
                     the mix.")
         st.write("The computational requirements is also another big trade-off to consider. Both methods require computation of similarity structures. However,\
-            the similarity structure for the collaborative based approach is larger. This can also seen given the lower\
-                latency for the content based approach. Moreover, we are only using the ratings dataset which is\
+            the similarity structure for the collaborative based approach is smaller based on our preprocessing used. This can also seen given the lower\
+                latency for the collaborative based approach. Moreover, we are only using the ratings dataset which is\
                     only a subset of the full ratings data. If we used the full ratings data, our similarity structure\
-                        would be even larger and hence require more computational power. Thus, if memory is an issue, it's\
-            best suited to follow a content based approach.") 
+                        would be larger and hence require more computational power. Thus, if we were working with a large\
+            dataset than memory would be an issue, for the collaborative approach. However, since we're working with a subset\
+            of the dataset it's best suited to follow the collaborative approach.") 
         st.write("Furthermore, for the content based approach the similarity\
             matrix can be reused (unless more features are used to compute the similarity matrix). However, this is not\
             the case for the collaborative approach. As more users give ratings, the similarity matrix needs to be\
                 updated in order to make improved recommendations.")
         st.subheader('So which one?')
         st.write("Well, it depends on what is more important to you. If you are looking for a recommendation system\
-        that works faster then content based is the best option. If you want a system that suggests more diverse movies,\
+        that works faster then collaborative based approach (based on our preprocessing) is the best option. If you want a system that suggests more diverse movies,\
         then the collaborative approach is the way to go. Both approaches can suffer from the cold start problem, but\
         the collaborative approach is more likely to suffer from this problem. However as time passes, more ratings are\
         given reducing the sparsity of the similarity structure which is very beneficial for the collaborative approach,\
-        especially when working with large datasets. Then again, if you're working on your local computer and your computer is nothing special :),\
+        especially when working with large datasets. Then again, if you're working on your local computer with a very large\
+        dataset and your computer is nothing special :),\
         then the content based approach will be better\
-        suited.")
+        suited. Taking everything in account (based on our preprocessing) the collaborative approach works best.")
         st.subheader('Future work')
         st.write("We see that both of these methods has its pros and cons. In order to get the best of both worlds we can use\
         a hybrid approach which combines the content and collaborative based approaches.")
