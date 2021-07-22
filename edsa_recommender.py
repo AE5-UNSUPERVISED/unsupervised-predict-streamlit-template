@@ -188,18 +188,16 @@ def main():
                     or by considering a particular user's activity based on what he wants to engage with (Content Based Filtering).")
         st.write('We will use both approaches to recommend movies to a user based on their 3 favourite movies.')
         st.subheader("Content based filtering")   
-        st.markdown('- Applying the content based approach, we used the movies and imdb dataset.')
-        st.markdown('- We then merged these two datasets in order the enrich the content available.')
+        st.markdown('- Applying the content based approach, we used the movies dataset.')
         st.markdown('- The algorithm then recommended those movies which were most similar to the 3 favorite movies chosen by the user.')
-        st.markdown('- The genre, title cast, director and plot keywords were taken into account when making these recommendations.')
+        st.markdown('- The genre was taken into account when making these recommendations.')
         st.subheader("Collaborative based filtering")
         st.markdown('- The ratings and movies dataset was used to apply the collaborative based approach.')
         st.markdown('- The algorithm mapped the given favorite movies to users within the movies dataset.')
         st.markdown("- It then extracted the user ID's of users with similar high ratings for each movie.") 
         st.markdown('- Next, the top 10 movies were recommended for the user using the system.\
             These recommendations were made based on their similar high ratings by other similar users.')
-        st.write('In order to fine tune these recommendations, a filter was applied in both approaches, filtering\
-            out movies that was not in a specified release year range.')
+        
         st.subheader("Performance of models investigated for Collaborative Filtering")
         st.write("RMSE of the recommendation models to show their performance")
         st.image('resources/imgs/RMSE.png',use_column_width=True)
@@ -208,10 +206,8 @@ def main():
         st.subheader('Trade-offs')
         st.write('Both approaches gave relatively good recommendations, however the latency for the content based filter was higher\
             than that of the collaboratory based filter.')
-        st.write("For the content based filter, if a user picks a list of movies which is not similar to any other movies in the dataset\
-            based on genre, title cast, director or plot keywords then the recommendations given by the system won't be\
-            very good.")    
-        st.write("The same issue applies for the collaborative based filter, if no one else in the system has rated any\
+           
+        st.write("For the collaborative based filter, if no one else in the system has rated any\
              of the movies given by the user we won't be able to use this approach. However, there is a way around this\
                  problem by imputing the rating for this movie.")
         st.write("Another aspect we should consider is the diversity of recommendations. Collaborative based approaches \
