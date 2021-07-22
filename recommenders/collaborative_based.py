@@ -51,8 +51,8 @@ ratings_df.drop(['timestamp'], axis=1,inplace=True)
 model=pickle.load(open('resources/models/SVD.pkl', 'rb'))
 
 # Create new feature year
-movies_df['year'] = movies_df['title'].str[-6:]
-movies_df['year'] = movies_df['year'].apply(lambda st: st[st.find("(")+1:st.find(")")])
+#movies_df['year'] = movies_df['title'].str[-6:]
+#movies_df['year'] = movies_df['year'].apply(lambda st: st[st.find("(")+1:st.find(")")])
 
 def prediction_item(item_id):
     """Map a given favourite movie to users within the
@@ -129,22 +129,22 @@ def collab_model(movie_list,top_n=10):
     movies = movies_df
 
     # extract year from movie list
-    movie_year = [x[-6:] for x in movie_list]
+    #movie_year = [x[-6:] for x in movie_list]
     # clean year
-    def clean_year(movie_year):
-        em = []
-        for i in range(len(movie_year)):
-            x = re.sub(r'[\(\)]', '', movie_year[i])
-            em.append(x)
-        return em
-    cleanyear = clean_year(movie_year)
+    #def clean_year(movie_year):
+     #   em = []
+      #  for i in range(len(movie_year)):
+       #     x = re.sub(r'[\(\)]', '', movie_year[i])
+        #    em.append(x)
+        #return em
+    #cleanyear = clean_year(movie_year)
     # drop rows that does not have year
-    index_names = movies[movies['year'].str.len() != 4].index
-    movies.drop(index_names, inplace=True)
+    #index_names = movies[movies['year'].str.len() != 4].index
+    #movies.drop(index_names, inplace=True)
     # filter out years that are not in range
-    minyear = str(int(min(cleanyear)) - 5)
-    maxyear = str(int(max(cleanyear)) + 5)
-    movies = movies[(movies['year'] > minyear) & (movies['year'] < maxyear)]
+    #minyear = str(int(min(cleanyear)) - 5)
+    #maxyear = str(int(max(cleanyear)) + 5)
+    #movies = movies[(movies['year'] > minyear) & (movies['year'] < maxyear)]
     
     # map the given movies selected within the app to users within the MovieLens dataset, return user ID's of users with
     # similar high ratings for each movie
