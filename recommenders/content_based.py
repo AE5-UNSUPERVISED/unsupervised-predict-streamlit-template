@@ -41,12 +41,12 @@ import re
 #imdb = pd.read_csv('/home/explore-student/unsupervised-predict-streamlit-template/resources/data/imdb_data.csv')
 movies = pd.read_csv('resources/data/movies.csv')
 ratings = pd.read_csv('resources/data/ratings.csv')
-imdb = pd.read_csv('resources/data/imdb_data.csv')
+#imdb = pd.read_csv('resources/data/imdb_data.csv')
 movies.dropna(inplace=True)
 
 # create new feature year
-movies['year'] = movies['title'].str[-6:]
-movies['year'] = movies['year'].apply(lambda st: st[st.find("(")+1:st.find(")")])
+#movies['year'] = movies['title'].str[-6:]
+#movies['year'] = movies['year'].apply(lambda st: st[st.find("(")+1:st.find(")")])
 
 def preprocess_genre(genre):
     genre = re.sub(r'[\-]', '_', genre)
@@ -55,18 +55,18 @@ def preprocess_genre(genre):
     genre = ' '.join([word for word in genre.split('|')])
     return genre
 
-def preprocess_titlecast(title_cast):
-    title_cast = re.sub(r'\ ', '_', str(title_cast))
-    title_cast = ' '.join([word for word in title_cast.split('|')])
-    return title_cast
+#def preprocess_titlecast(title_cast):
+   # title_cast = re.sub(r'\ ', '_', str(title_cast))
+    #title_cast = ' '.join([word for word in title_cast.split('|')])
+    #return title_cast
 
-def preprocess_director(director):
-    director = re.sub(r'\ ', '_', str(director))
-    return director
+#def preprocess_director(director):
+ #   director = re.sub(r'\ ', '_', str(director))
+  #  return director
 
-def preprocess_keywords(keywords):
-    keywords = ' '.join([word for word in str(keywords).split('|')])
-    return keywords
+#def preprocess_keywords(keywords):
+ #   keywords = ' '.join([word for word in str(keywords).split('|')])
+  #  return keywords
 
 def data_preprocessing(subset_size):
     """Prepare data for use within Content filtering algorithm.
@@ -84,15 +84,15 @@ def data_preprocessing(subset_size):
     """
 
     # Merge movies and imdb dataframes
-    movies_imdb = pd.merge(left=movies, right=imdb, how='left', on='movieId')
+    #movies_imdb = pd.merge(left=movies, right=imdb, how='left', on='movieId')
 
     # Apply preprocessing functions to genres, title cast, director and plot keywords
-    movies_imdb['genres'] = movies['genres'].apply(preprocess_genre)
-    movies_imdb['title_cast'] = movies_imdb['title_cast'].apply(preprocess_titlecast)
-    movies_imdb['director'] = movies_imdb['director'].apply(preprocess_director)
-    movies_imdb['plot_keywords'] = movies_imdb['plot_keywords'].apply(preprocess_keywords)
+    movies['genres'] = movies['genres'].apply(preprocess_genre)
+    #movies_imdb['title_cast'] = movies_imdb['title_cast'].apply(preprocess_titlecast)
+    #movies_imdb['director'] = movies_imdb['director'].apply(preprocess_director)
+    #movies_imdb['plot_keywords'] = movies_imdb['plot_keywords'].apply(preprocess_keywords)
     # Subset of the data
-    movies_subset = movies_imdb[:subset_size]
+    movies_subset = movies[:subset_size]
     return movies_subset
 
 # !! DO NOT CHANGE THIS FUNCTION SIGNATURE !!
@@ -116,26 +116,26 @@ def content_model(movie_list,top_n=10):
     """
 
     # extract year from movie list
-    movie_year = [x[-6:] for x in movie_list]
+    #movie_year = [x[-6:] for x in movie_list]
     # clean year
-    def clean_year(movie_year):
-        em = []
-        for i in range(len(movie_year)):
-            x = re.sub(r'[\(\)]', '', movie_year[i])
-            em.append(x)
-        return em
-    cleanyear = clean_year(movie_year)
+    #def clean_year(movie_year):
+     #   em = []
+      #  for i in range(len(movie_year)):
+       #     x = re.sub(r'[\(\)]', '', movie_year[i])
+        #    em.append(x)
+        #return em
+    #cleanyear = clean_year(movie_year)
     
     # preprocess data and select subset
-    data = data_preprocessing(35000)
+    data = data_preprocessing(27000)
     # drop rows that does not have year
-    index_names = data[data['year'].str.len() != 4].index
-    data.drop(index_names, inplace=True)
+    #index_names = data[data['year'].str.len() != 4].index
+    #data.drop(index_names, inplace=True)
     # filter out years that are not in range
-    minyear = str(int(min(cleanyear)) - 5)
-    maxyear = str(int(max(cleanyear)) + 5)
-    data = data[(data['year'] > minyear) & (data['year'] < maxyear)]
-    columns = ['plot_keywords']
+    #minyear = str(int(min(cleanyear)) - 5)
+    #maxyear = str(int(max(cleanyear)) + 5)
+    #data = data[(data['year'] > minyear) & (data['year'] < maxyear)]
+    columns = ['genres']
     # Combine text data in one column
     df_content = (pd.Series(data[columns]
                       .fillna('')
